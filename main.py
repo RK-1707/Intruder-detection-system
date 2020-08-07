@@ -42,3 +42,49 @@ while(True):
 # Release Capture and destroy windows
 cap.release()
 cv2.destroyAllWindows()
+
+from twilio.rest import Client
+
+# Read text from the credentials file and store in data variable
+with open('credentials.txt', 'r') as myfile:
+  data = myfile.read()
+
+# Convert data variable into dictionary
+info_dict = eval(data)
+
+# Your Account ROHAN from twilio.com/console
+account_rohan = info_dict['account_rohan']
+
+# Your Auth Token from twilio.com/console
+auth_token  = info_dict['auth_token']
+
+# Set client and send the message
+client = Client(account_rohan, auth_token)
+message = client.messages.create( to =info_dict['9922860648'], from_ = info_dict['Apllication'], body= "ALERT!!!  Intruder detected!!")
+
+# load a video
+cap = cv2.VideoCapture('sample_video.mp4')
+
+# Create the background subtractor object
+foog = cv2.createBackgroundSubtractorMOG2( detectShadows = True, varThreshold = 50, history = 2800)
+
+while(1):
+    
+    ret, frame = cap.read() 
+    if not ret:
+        break
+        
+    # Apply the background object on each frame
+    fgmask = foog.apply(frame)
+    
+    # Get rid of the shadows
+    ret, fgmask = cv2.threshold(fgmask, 250, 255, cv2.THRESH_BINARY)
+    
+    # Show the background subtraction frame.
+    cv2.imshow('All three',fgmask)
+    k = cv2.waitKey(10)
+    if k == 27: 
+        break
+
+cap.release()
+cv2.destroyAllWindows()
