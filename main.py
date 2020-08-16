@@ -18,7 +18,7 @@ def send_message(body, info_dict):
 
     client = Client(account_rohan, auth_token)
 
-    message = client.messages.create( to = info_dict['9922860648'], from_ = info_dict['Application'], body= body)
+    message = client.messages.create( to = info_dict['99228606##'], from_ = info_dict['Application'], body= body)
     
 #Function for detecting if a person is present or not
 def is_person_present(frame, thresh=1100):
