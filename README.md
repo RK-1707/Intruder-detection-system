@@ -5,4 +5,4 @@
 
 - Once this is done put the IP address obtained in the code for it to work.
 
-- To send an alert to mobile device we make use of the "Twilio API", and therefore we need to install the twilio library first.
+- To send an alert to mobile device we make use of the "Twilio API", and therefore we need to install the twilio library first. After installation we need to get the acc. no. and the acc. token from the website and put this in the credentials.txt, and also change the mobile number.
