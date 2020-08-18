@@ -20,24 +20,23 @@ def send_message(body, info_dict):
 
     message = client.messages.create( to = info_dict['99228606##'], from_ = info_dict['Application'], body= body)
     
-#Function for detecting if a person is present or not
+#Function for detecting if a person is present
 def is_person_present(frame, thresh=1100):
-    
     global foog
     
     # Apply background subtraction
     fgmask = foog.apply(frame)
 
-    # Get rid of the shadows
+    # Removing shadows
     ret, fgmask = cv2.threshold(fgmask, 250, 255, cv2.THRESH_BINARY)
 
-    # Apply some morphological operations to make sure you have a good mask
+    # Apply dilation to increase the area of moving object
     fgmask = cv2.dilate(fgmask,kernel,iterations = 4)
 
     # Detect contours in the frame
     contours, hierarchy = cv2.findContours(fgmask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
      
-    # Check if there was a contour and the area is somewhat higher than some threshold so we know its a person and not noise
+    # Check if there was a person and not noise
     if contours and cv2.contourArea(max(contours, key = cv2.contourArea)) > thresh:
             
             # Get the max contour
@@ -46,21 +45,17 @@ def is_person_present(frame, thresh=1100):
             # Draw a bounding box around the person and label it as person detected
             x,y,w,h = cv2.boundingRect(cnt)
             cv2.rectangle(frame,(x ,y),(x+w,y+h),(0,0,255),2)
-            cv2.putText(frame,'ALERT!!!  Intruder Detected!!!',(x,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0,255,0), 1, cv2.LINE_AA)
+            cv2.putText(frame,'Intruder Detected',(x,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0,255,0), 1, cv2.LINE_AA)
             
             return True, frame
         
-        
-    # Otherwise report there was no one present
     else:
         return False, frame
-    
-#time.sleep(15)
 
 # Set Window normal so we can resize it
 cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
 
-# This is a test video
+# Capture video and input it to application
 cap = cv2.VideoCapture('http://192.168.18.4:6067/video')
 
 # Get width and height of the frame
@@ -75,30 +70,16 @@ info_dict = eval(data)
 
 # Initialize the background Subtractor
 foog = cv2.createBackgroundSubtractorMOG2( detectShadows = True, varThreshold = 100, history = 2000)
-
-# Status is True when person is present and False when the person is not present.
 status = False
-
-# After the person disapears from view, wait atleast 7 seconds before making the status False
 patience = 7
-
-# We don't consider an initial detection unless its detected 15 times, this gets rid of false positives
 detection_thresh = 15
-
-# Initial time for calculating if patience time is up
 initial_time = None
-
-# We are creating a deque object of length detection_thresh and will store individual detection statuses here
 de = deque([False] * detection_thresh, maxlen=detection_thresh)
-
-# Initialize these variables for calculating FPS
 fps = 0 
 frame_counter = 0
 start_time = time.time()
 
-
 while(True):
-    
     ret, frame = cap.read()
     if not ret:
         break 
@@ -106,11 +87,10 @@ while(True):
     # This function will return a boolean variable telling if someone was present or not, it will also draw boxes if it finds someone
     detected, annotated_image = is_person_present(frame)  
     
-    # Register the current detection status on our deque object
+    # Register the current detection status on our object
     de.appendleft(detected)
      
-    # If we have consectutively detected a person 15 times then we are sure that soemone is present    
-    # We also make this is the first time that this person has been detected so we only initialize the videowriter once
+    # If we have consectutively detected a person 15 times then we are sure that soemone is present
     if sum(de) == detection_thresh and not status:                       
             status = True
             entry_time = datetime.datetime.now().strftime("%A, %I-%M-%S %p %d %B %Y")
@@ -145,25 +125,12 @@ while(True):
     # Get the current time in the required format
     current_time = datetime.datetime.now().strftime("%A, %I:%M:%S %p %d %B %Y")
 
-    # Show the patience Value
-    if initial_time is None:
-        text = 'Patience: {}'.format(patience)
-    else: 
-        text = 'Patience: {:.2f}'.format(max(0, patience - (time.time() - initial_time)))
-        
-    cv2.putText(annotated_image, text, (10, 450), cv2.FONT_HERSHEY_COMPLEX, 0.6, (255, 40, 155) , 2)   
-
-    # If status is true save the frame
-    if status:
-        out.write(annotated_image)
- 
     # Show the Frame
     cv2.imshow('frame',frame)
     
     # Calculate the Average FPS
     frame_counter += 1
     fps = (frame_counter / (time.time() - start_time))
-    
     
     # Exit if q is pressed.
     if cv2.waitKey(30) == ord('q'):
