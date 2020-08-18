@@ -5,4 +5,6 @@
 
 - Once this is done put the IP address obtained in the code for it to work.
 
-- To send an alert to mobile device we make use of the "Twilio API", and therefore we need to install the twilio library first. After installation we need to get the acc. no. and the acc. token from the website and put this in the credentials.txt, and also change the mobile number.
+- To send an alert to mobile device we make use of the "Twilio API", and therefore we need to install the twilio library first. After installation we need to get the acc. no. and the acc. token from the website and put this in the credentials.txt, and also change the mobile number. A screenshot of the message sent on the mobile device is given below.
+
+![Screenshot_2020-08-18-17-13-50-703_com android mms](https://user-images.githubusercontent.com/60837429/90511862-ca07f400-e17a-11ea-9cd4-94be39b5fe71.jpg)
