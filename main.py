@@ -90,7 +90,7 @@ while(True):
     # Register the current detection status on our object
     de.appendleft(detected)
      
-    # If we have consectutively detected a person 15 times then we are sure that soemone is present
+    # If we have consecutively detected a person 15 times then we are sure that someone is present
     if sum(de) == detection_thresh and not status:                       
             status = True
             entry_time = datetime.datetime.now().strftime("%A, %I-%M-%S %p %d %B %Y")
