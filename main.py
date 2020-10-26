@@ -10,7 +10,7 @@ from twilio.rest import Client
 def send_message(body, info_dict):
 
     # Your Account ROHAN from twilio.com/console
-    account_sid = info_dict['account_rohan']
+    account_rohan = info_dict['account_rohan']
 
     # Your Auth Token from twilio.com/console
     auth_token  = info_dict['auth_token']
